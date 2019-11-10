@@ -36,11 +36,17 @@ type alias Model =
 
 type Msg
     = NoOp
+    | CompleteChore String
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
-    ( model, Cmd.none )
+    case msg of
+        NoOp ->
+            ( model, Cmd.none )
+
+        CompleteChore chore ->
+            Debug.todo ("handle CompleteChore " ++ chore)
 
 
 
