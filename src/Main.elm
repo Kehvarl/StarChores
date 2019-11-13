@@ -55,4 +55,10 @@ update msg model =
 
 view : Model -> Html Msg
 view model =
-    h1 [] [ text "Hello World" ]
+    div []
+        [ h1 [] [ text "Hello World" ]
+        , ul []
+            [ li [] [ text "Chore" ]
+            , li [] [ text "Chore" ]
+            ]
+        ]
