@@ -25,15 +25,23 @@ main =
 
 init : () -> ( Model, Cmd Msg )
 init _ =
-    ( { chores = [ "one", "two" ], newChore = "" }, Cmd.none )
+    ( { chores = [ Chore "one" 0 ], newChore = "" }
+    , Cmd.none
+    )
 
 
 
 --UPDATE
 
 
+type alias Chore =
+    { name : String
+    , stars : Int
+    }
+
+
 type alias Model =
-    { chores : List String
+    { chores : List Chore
     , newChore : String
     }
 
@@ -55,8 +63,8 @@ update msg model =
         CompleteChore chore ->
             let
                 star c =
-                    if c == chore then
-                        c ++ "*"
+                    if c.name == chore then
+                        { c | stars = c.stars + 1 }
 
                     else
                         c
@@ -66,7 +74,7 @@ update msg model =
             )
 
         RemoveChore chore ->
-            ( { model | chores = List.filter (\c -> c /= chore) model.chores }
+            ( { model | chores = List.filter (\c -> c.name /= chore) model.chores }
             , Cmd.none
             )
 
@@ -76,7 +84,7 @@ update msg model =
             )
 
         NewChore ->
-            ( { model | chores = model.chores ++ [ model.newChore ], newChore = "" }
+            ( { model | chores = model.chores ++ [ Chore model.newChore 0 ], newChore = "" }
             , Cmd.none
             )
 
@@ -96,10 +104,10 @@ view model =
         ]
 
 
-viewChore : String -> Html Msg
+viewChore : Chore -> Html Msg
 viewChore chore =
-    li [ onClick (CompleteChore chore) ]
-        [ button [ onClick (RemoveChore chore) ]
+    li [ onClick (CompleteChore chore.name) ]
+        [ button [ onClick (RemoveChore chore.name) ]
             [ text "x" ]
-        , text (" " ++ chore)
+        , text (" " ++ chore.name ++ " " ++ String.fromInt chore.stars)
         ]
