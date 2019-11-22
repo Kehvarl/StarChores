@@ -2,7 +2,8 @@ module Main exposing (..)
 
 import Browser
 import Html exposing (..)
-import Html.Events exposing (onClick)
+import Html.Attributes exposing (..)
+import Html.Events exposing (onClick, onInput)
 
 
 
@@ -24,7 +25,7 @@ main =
 
 init : () -> ( Model, Cmd Msg )
 init _ =
-    ( { chores = [ "one", "two" ] }, Cmd.none )
+    ( { chores = [ "one", "two" ], newChore = "" }, Cmd.none )
 
 
 
@@ -32,12 +33,16 @@ init _ =
 
 
 type alias Model =
-    { chores : List String }
+    { chores : List String
+    , newChore : String
+    }
 
 
 type Msg
     = NoOp
     | CompleteChore String
+    | ChoreInput String
+    | NewChore
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -59,6 +64,16 @@ update msg model =
             , Cmd.none
             )
 
+        ChoreInput newChore ->
+            ( { model | newChore = newChore }
+            , Cmd.none
+            )
+
+        NewChore ->
+            ( { model | chores = model.chores ++ [ model.newChore ], newChore = "" }
+            , Cmd.none
+            )
+
 
 
 --VIEW
@@ -70,6 +85,8 @@ view model =
         [ h1 [] [ text "Hello World" ]
         , ul [] <|
             List.map viewChore model.chores
+        , input [ onInput ChoreInput, value model.newChore ] []
+        , button [ onClick NewChore ] [ text "Add Chore" ]
         ]
 
 
