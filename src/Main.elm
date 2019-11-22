@@ -2,6 +2,7 @@ module Main exposing (..)
 
 import Browser
 import Html exposing (..)
+import Html.Events exposing (onClick)
 
 
 
@@ -23,7 +24,7 @@ main =
 
 init : () -> ( Model, Cmd Msg )
 init _ =
-    ( 0, Cmd.none )
+    ( { chores = [ "one", "two" ] }, Cmd.none )
 
 
 
@@ -31,7 +32,7 @@ init _ =
 
 
 type alias Model =
-    Int
+    { chores : List String }
 
 
 type Msg
@@ -46,7 +47,17 @@ update msg model =
             ( model, Cmd.none )
 
         CompleteChore chore ->
-            Debug.todo ("handle CompleteChore " ++ chore)
+            let
+                star c =
+                    if c == chore then
+                        c ++ "*"
+
+                    else
+                        c
+            in
+            ( { model | chores = List.map star model.chores }
+            , Cmd.none
+            )
 
 
 
@@ -57,8 +68,11 @@ view : Model -> Html Msg
 view model =
     div []
         [ h1 [] [ text "Hello World" ]
-        , ul []
-            [ li [] [ text "Chore" ]
-            , li [] [ text "Chore" ]
-            ]
+        , ul [] <|
+            List.map viewChore model.chores
         ]
+
+
+viewChore : String -> Html Msg
+viewChore chore =
+    li [ onClick (CompleteChore chore) ] [ text chore ]
