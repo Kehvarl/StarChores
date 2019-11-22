@@ -41,6 +41,7 @@ type alias Model =
 type Msg
     = NoOp
     | CompleteChore String
+    | RemoveChore String
     | ChoreInput String
     | NewChore
 
@@ -61,6 +62,11 @@ update msg model =
                         c
             in
             ( { model | chores = List.map star model.chores }
+            , Cmd.none
+            )
+
+        RemoveChore chore ->
+            ( { model | chores = List.filter (\c -> c /= chore) model.chores }
             , Cmd.none
             )
 
@@ -92,4 +98,8 @@ view model =
 
 viewChore : String -> Html Msg
 viewChore chore =
-    li [ onClick (CompleteChore chore) ] [ text chore ]
+    li [ onClick (CompleteChore chore) ]
+        [ button [ onClick (RemoveChore chore) ]
+            [ text "x" ]
+        , text (" " ++ chore)
+        ]
