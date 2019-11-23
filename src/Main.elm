@@ -4,6 +4,8 @@ import Browser
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput)
+import Svg exposing (polygon)
+import Svg.Attributes as SA exposing (height, points, stroke, viewBox, width)
 
 
 
@@ -96,7 +98,7 @@ update msg model =
 view : Model -> Html Msg
 view model =
     div []
-        [ h1 [] [ text "Hello World" ]
+        [ h1 [] [ text "My Chores Chart" ]
         , ul [] <|
             List.map viewChore model.chores
         , input [ onInput ChoreInput, value model.newChore ] []
@@ -109,5 +111,22 @@ viewChore chore =
     li [ onClick (CompleteChore chore.name) ]
         [ button [ onClick (RemoveChore chore.name) ]
             [ text "x" ]
-        , text (" " ++ chore.name ++ " " ++ String.fromInt chore.stars)
+        , text (" " ++ chore.name)
+        , span [] <| List.repeat chore.stars viewStar
+        ]
+
+
+viewStar : Html Msg
+viewStar =
+    Svg.svg
+        [ SA.width "25"
+        , SA.height "20"
+        , SA.viewBox "0 0 25 17"
+        ]
+        [ polygon
+            [ SA.fill "gold"
+            , SA.stroke "yellow"
+            , SA.points "10,1 4,20 19,8 1,8 16,20"
+            ]
+            []
         ]
