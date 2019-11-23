@@ -27,7 +27,7 @@ main =
 
 init : () -> ( Model, Cmd Msg )
 init _ =
-    ( { chores = [ Chore "one" 0 ], newChore = "" }
+    ( { chores = [ Chore "Click or Tap Me!" 0 ], newChore = "" }
     , Cmd.none
     )
 
@@ -121,6 +121,7 @@ view : Model -> Html Msg
 view model =
     div []
         [ h1 [] [ text "My Chores Chart" ]
+        , h3 [] [ text "Give yourself some credit" ]
         , ul [] <|
             List.map viewChore model.chores
         , input [ onInput ChoreInput, value model.newChore ] []
