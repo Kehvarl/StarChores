@@ -86,9 +86,31 @@ update msg model =
             )
 
         NewChore ->
-            ( { model | chores = model.chores ++ [ Chore model.newChore 0 ], newChore = "" }
-            , Cmd.none
-            )
+            let
+                exists =
+                    List.filter (\c -> c.name == model.newChore) model.chores
+            in
+            if exists == [] then
+                ( { model | chores = model.chores ++ [ Chore model.newChore 0 ], newChore = "" }
+                , Cmd.none
+                )
+
+            else
+                ( { model
+                    | chores =
+                        List.map
+                            (\c ->
+                                if c.name == model.newChore then
+                                    Chore c.name (c.stars + 1)
+
+                                else
+                                    c
+                            )
+                            model.chores
+                    , newChore = ""
+                  }
+                , Cmd.none
+                )
 
 
 
@@ -123,6 +145,7 @@ viewStar =
         , SA.height "20"
         , SA.viewBox "0 0 25 17"
         ]
+        --Draw a star
         [ polygon
             [ SA.fill "gold"
             , SA.stroke "yellow"
