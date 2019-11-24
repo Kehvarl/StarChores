@@ -132,7 +132,8 @@ view model =
 viewChore : Chore -> Html Msg
 viewChore chore =
     li [ onClick (CompleteChore chore.name) ]
-        [ button [ onClick (RemoveChore chore.name) ]
+        [ button
+            [ onClick (RemoveChore chore.name) ]
             [ text "x" ]
         , text (" " ++ chore.name)
         , span [] <| List.repeat chore.stars viewStar
