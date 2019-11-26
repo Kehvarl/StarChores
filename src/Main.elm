@@ -6,6 +6,8 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput)
 import Svg exposing (polygon)
 import Svg.Attributes as SA exposing (height, points, stroke, viewBox, width)
+import Task
+import Time
 
 
 
@@ -17,7 +19,7 @@ main =
         { init = init
         , update = update
         , view = \model -> { title = "Star • Chores", body = [ view model ] }
-        , subscriptions = \_ -> Sub.none
+        , subscriptions = subscriptions
         }
 
 
@@ -27,7 +29,10 @@ main =
 
 init : () -> ( Model, Cmd Msg )
 init _ =
-    ( { chores = [ Chore "Click or Tap Me!" 0 ], newChore = "" }
+    ( { chores = [ Chore "Click or Tap Me!" 0 ]
+      , newChore = ""
+      , curTime = Time.millisToPosix 0
+      }
     , Cmd.none
     )
 
@@ -45,6 +50,7 @@ type alias Chore =
 type alias Model =
     { chores : List Chore
     , newChore : String
+    , curTime : Time.Posix
     }
 
 
@@ -54,6 +60,7 @@ type Msg
     | RemoveChore String
     | ChoreInput String
     | NewChore
+    | Tick Time.Posix
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -72,17 +79,17 @@ update msg model =
                         c
             in
             ( { model | chores = List.map star model.chores }
-            , Cmd.none
+            , Task.perform Tick Time.now
             )
 
         RemoveChore chore ->
             ( { model | chores = List.filter (\c -> c.name /= chore) model.chores }
-            , Cmd.none
+            , Task.perform Tick Time.now
             )
 
         ChoreInput newChore ->
             ( { model | newChore = newChore }
-            , Cmd.none
+            , Task.perform Tick Time.now
             )
 
         NewChore ->
@@ -92,7 +99,7 @@ update msg model =
             in
             if exists == [] then
                 ( { model | chores = model.chores ++ [ Chore model.newChore 0 ], newChore = "" }
-                , Cmd.none
+                , Task.perform Tick Time.now
                 )
 
             else
@@ -109,8 +116,22 @@ update msg model =
                             model.chores
                     , newChore = ""
                   }
-                , Cmd.none
+                , Task.perform Tick Time.now
                 )
+
+        Tick newTime ->
+            ( { model | curTime = newTime }
+            , Cmd.none
+            )
+
+
+
+--SUBSCRIPTIONS
+
+
+subscriptions : Model -> Sub Msg
+subscriptions model =
+    Time.every 1000 Tick
 
 
 
