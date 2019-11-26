@@ -29,7 +29,7 @@ main =
 
 init : () -> ( Model, Cmd Msg )
 init _ =
-    ( { chores = [ Chore "Click or Tap Me!" 0 ]
+    ( { chores = [ Chore "Click or Tap Me!" [] ]
       , newChore = ""
       , curTime = Time.millisToPosix 0
       }
@@ -41,9 +41,13 @@ init _ =
 --UPDATE
 
 
+type alias Star =
+    { time : Time.Posix }
+
+
 type alias Chore =
     { name : String
-    , stars : Int
+    , stars : List Star
     }
 
 
@@ -73,7 +77,7 @@ update msg model =
             let
                 star c =
                     if c.name == chore then
-                        { c | stars = c.stars + 1 }
+                        { c | stars = c.stars ++ [ Star model.curTime ] }
 
                     else
                         c
@@ -98,7 +102,7 @@ update msg model =
                     List.filter (\c -> c.name == model.newChore) model.chores
             in
             if exists == [] then
-                ( { model | chores = model.chores ++ [ Chore model.newChore 0 ], newChore = "" }
+                ( { model | chores = model.chores ++ [ Chore model.newChore [] ], newChore = "" }
                 , Task.perform Tick Time.now
                 )
 
@@ -108,7 +112,7 @@ update msg model =
                         List.map
                             (\c ->
                                 if c.name == model.newChore then
-                                    Chore c.name (c.stars + 1)
+                                    Chore c.name (c.stars ++ [ Star model.curTime ])
 
                                 else
                                     c
@@ -157,16 +161,16 @@ viewChore chore =
             [ onClick (RemoveChore chore.name) ]
             [ text "x" ]
         , text (" " ++ chore.name)
-        , span [] <| List.repeat chore.stars viewStar
+        , span [] <| List.map viewStar chore.stars
         ]
 
 
-viewStar : Html Msg
-viewStar =
+viewStar : Star -> Html Msg
+viewStar star =
     Svg.svg
         [ SA.width "25"
         , SA.height "20"
-        , SA.viewBox "0 0 25 17"
+        , SA.viewBox "0 0 25 20"
         ]
         --Draw a star
         [ polygon
@@ -174,5 +178,32 @@ viewStar =
             , SA.stroke "yellow"
             , SA.points "10,1 4,20 19,8 1,8 16,20"
             ]
-            []
+            [ Svg.title
+                []
+                [ text (stringFromPosix star.time) ]
+            ]
         ]
+
+
+stringFromPosix : Time.Posix -> String
+stringFromPosix posix =
+    let
+        year =
+            String.fromInt (Time.toYear Time.utc posix)
+
+        month =
+            Time.toMonth Time.utc posix
+
+        day =
+            String.fromInt (Time.toDay Time.utc posix)
+
+        hour =
+            String.fromInt (Time.toHour Time.utc posix)
+
+        minute =
+            String.fromInt (Time.toMinute Time.utc posix)
+
+        second =
+            String.fromInt (Time.toSecond Time.utc posix)
+    in
+    year ++ "/" ++ "" ++ "/" ++ day ++ " -- " ++ hour ++ ":" ++ minute ++ ":" ++ second
