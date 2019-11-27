@@ -192,7 +192,7 @@ stringFromPosix posix =
             String.fromInt (Time.toYear Time.utc posix)
 
         month =
-            Time.toMonth Time.utc posix
+            stringFromMonth (Time.toMonth Time.utc posix)
 
         day =
             String.fromInt (Time.toDay Time.utc posix)
@@ -206,4 +206,44 @@ stringFromPosix posix =
         second =
             String.fromInt (Time.toSecond Time.utc posix)
     in
-    year ++ "/" ++ "" ++ "/" ++ day ++ " -- " ++ hour ++ ":" ++ minute ++ ":" ++ second
+    year ++ "/" ++ month ++ "/" ++ day ++ " -- " ++ hour ++ ":" ++ minute ++ ":" ++ second
+
+
+stringFromMonth : Time.Month -> String
+stringFromMonth monthTime =
+    case monthTime of
+        Time.Jan ->
+            "Jan"
+
+        Time.Feb ->
+            "Feb"
+
+        Time.Mar ->
+            "Mar"
+
+        Time.Apr ->
+            "Apr"
+
+        Time.May ->
+            "May"
+
+        Time.Jun ->
+            "Jun"
+
+        Time.Jul ->
+            "Jul"
+
+        Time.Aug ->
+            "Aug"
+
+        Time.Sep ->
+            "Sep"
+
+        Time.Oct ->
+            "Oct"
+
+        Time.Nov ->
+            "Nov"
+
+        Time.Dec ->
+            "Dec"
