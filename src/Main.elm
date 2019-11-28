@@ -156,7 +156,7 @@ view model =
         , ul [] <|
             List.map viewChore model.chores
         , input [ onInput ChoreInput, value model.newChore ] []
-        , button [ onClick NewChore ] [ text "Add Chore" ]
+        , button [ onClick NewChore ] [ text "Add Task" ]
         ]
 
 
