@@ -29,7 +29,7 @@ main =
 
 init : () -> ( Model, Cmd Msg )
 init _ =
-    ( { chores = [ Chore "Click or Tap Me!" [] ]
+    ( { chores = [ Chore "Drink Water!" [] Glass ]
       , newChore = ""
       , curTime = Time.millisToPosix 0
       }
@@ -45,9 +45,15 @@ type alias Completion =
     { time : Time.Posix }
 
 
+type ChoreIcon
+    = Star
+    | Glass
+
+
 type alias Chore =
     { name : String
     , completed : List Completion
+    , icon : ChoreIcon
     }
 
 
@@ -102,7 +108,7 @@ update msg model =
                     List.filter (\c -> c.name == model.newChore) model.chores
             in
             if exists == [] then
-                ( { model | chores = model.chores ++ [ Chore model.newChore [] ], newChore = "" }
+                ( { model | chores = model.chores ++ [ Chore model.newChore [] Star ], newChore = "" }
                 , Task.perform Tick Time.now
                 )
 
@@ -112,7 +118,7 @@ update msg model =
                         List.map
                             (\c ->
                                 if c.name == model.newChore then
-                                    Chore c.name (c.completed ++ [ Completion model.curTime ])
+                                    Chore c.name (c.completed ++ [ Completion model.curTime ]) Star
 
                                 else
                                     c
@@ -161,8 +167,18 @@ viewChore chore =
             [ onClick (RemoveChore chore.name) ]
             [ text "x" ]
         , text (" " ++ chore.name)
-        , span [] <| List.map viewGlass chore.completed
+        , span [] <| List.map (viewComplete chore.icon) chore.completed
         ]
+
+
+viewComplete : ChoreIcon -> Completion -> Html Msg
+viewComplete choreIcon completion =
+    case choreIcon of
+        Star ->
+            viewStar completion
+
+        Glass ->
+            viewGlass completion
 
 
 viewStar : Completion -> Html Msg
