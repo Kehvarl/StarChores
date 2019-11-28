@@ -41,13 +41,13 @@ init _ =
 --UPDATE
 
 
-type alias Star =
+type alias Completion =
     { time : Time.Posix }
 
 
 type alias Chore =
     { name : String
-    , stars : List Star
+    , completed : List Completion
     }
 
 
@@ -75,14 +75,14 @@ update msg model =
 
         CompleteChore chore ->
             let
-                star c =
+                complete c =
                     if c.name == chore then
-                        { c | stars = c.stars ++ [ Star model.curTime ] }
+                        { c | completed = c.completed ++ [ Completion model.curTime ] }
 
                     else
                         c
             in
-            ( { model | chores = List.map star model.chores }
+            ( { model | chores = List.map complete model.chores }
             , Task.perform Tick Time.now
             )
 
@@ -112,7 +112,7 @@ update msg model =
                         List.map
                             (\c ->
                                 if c.name == model.newChore then
-                                    Chore c.name (c.stars ++ [ Star model.curTime ])
+                                    Chore c.name (c.completed ++ [ Completion model.curTime ])
 
                                 else
                                     c
@@ -161,11 +161,11 @@ viewChore chore =
             [ onClick (RemoveChore chore.name) ]
             [ text "x" ]
         , text (" " ++ chore.name)
-        , span [] <| List.map viewStar chore.stars
+        , span [] <| List.map viewGlass chore.completed
         ]
 
 
-viewStar : Star -> Html Msg
+viewStar : Completion -> Html Msg
 viewStar star =
     Svg.svg
         [ SA.width "25"
@@ -177,6 +177,35 @@ viewStar star =
             [ SA.fill "gold"
             , SA.stroke "yellow"
             , SA.points "10,1 4,20 19,8 1,8 16,20"
+            ]
+            [ Svg.title
+                []
+                [ text (stringFromPosix star.time) ]
+            ]
+        ]
+
+
+viewGlass : Completion -> Html Msg
+viewGlass star =
+    Svg.svg
+        [ SA.width "25"
+        , SA.height "20"
+        , SA.viewBox "0 0 25 20"
+        ]
+        --Draw a star
+        [ polygon
+            [ SA.fill "White"
+            , SA.stroke "black"
+            , SA.points "3,3 17,3 15,18 8,18"
+            ]
+            [ Svg.title
+                []
+                [ text (stringFromPosix star.time) ]
+            ]
+        , polygon
+            [ SA.fill "blue"
+            , SA.stroke "Blue"
+            , SA.points "6,8 14,8 15,18 8,18"
             ]
             [ Svg.title
                 []
