@@ -29,16 +29,13 @@ main =
 
 init : () -> ( Model, Cmd Msg )
 init _ =
-    ( { chores = [ Chore "Drink Water!" [] Glass ]
-      , newChore = ""
-      , curTime = Time.millisToPosix 0
-      }
+    ( Model [ Chore "Drink Water!" [] Glass ] "" (Time.millisToPosix 0)
     , Cmd.none
     )
 
 
 
---UPDATE
+--MODEL
 
 
 type alias Completion =
@@ -62,6 +59,10 @@ type alias Model =
     , newChore : String
     , curTime : Time.Posix
     }
+
+
+
+--UPDATE
 
 
 type Msg
